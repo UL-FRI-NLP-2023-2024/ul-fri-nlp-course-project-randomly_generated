@@ -31,23 +31,23 @@
 %----------------------------------------------------------------------------------------
 
 % Header
-\JournalInfo{FRI Natural language processing course 2021}
+\JournalInfo{FRI Natural language processing course 2024}
 
 % Interim or final report
 \Archive{Project report} 
 %\Archive{Final report} 
 
 % Article title
-\PaperTitle{Natural language processing course Latex Template} 
+\PaperTitle{LLM Prompt Strategies for Commonsense-Reasoning Tasks} 
 
 % Authors (student competitors) and their info
-\Authors{John Doe, Jane Doe, and Mike Smith}
+\Authors{Žan Počkar, Amer Mujagić, and Ivan Nikolov}
 
 % Advisors
-\affiliation{\textit{Advisors: Slavko Žitnik}}
+\affiliation{\textit{Advisors: Aleš Žagar}}
 
 % Keywords
-\Keywords{Keyword1, Keyword2, Keyword3 ...}
+\Keywords{Prompt Strategies, Prompt Evaluation}
 \newcommand{\keywordname}{Keywords}
 
 
@@ -56,7 +56,7 @@
 %----------------------------------------------------------------------------------------
 
 \Abstract{
-The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here. The abstract goes here.
+With the rise in LLM usage, diverse optimization techniques have emerged. In order to evaluate and compare the efficiency of different prompt strategies, we first needed to describe what commonsense-reasoning tasks are. After describing the tasks we made a selection of different prompt strategies which required us reviewing the different strategies and choosing the ones that seemed to be both in popular use and different enough so that these evaluations could be extended to different sub-types of mentioned strategies. After choosing the strategies, we also choose models and datasets to test the strategies on, and reviewed possible evaluation methods.
 }
 
 %----------------------------------------------------------------------------------------
@@ -77,155 +77,108 @@ The abstract goes here. The abstract goes here. The abstract goes here. The abst
 %----------------------------------------------------------------------------------------
 
 \section*{Introduction}
-	These latex files are intended to serve as a the template for the NLP course at FRI.  The template is adapted from the FRI Data Science Project Competition. template  If you find mistakes in the template or have problems using it, please consult Jure Demšar (\href{mailto:jure.demsar@fri.uni-lj.si}{jure.demsar@fri.uni-lj.si}).
-	
-	In the Introduction section you should write about the relevance of your work (what is the purpose of the project, what will we solve) and about related work (what solutions for the problem already exist). Where appropriate, reference scientific work conducted by other researchers. For example, the work done by Demšar et al. \cite{Demsar2016BalancedMixture} is very important for our project. The abbreviation et al. is for et alia, which in latin means and others, we use this abbreviation when there are more than two authors of the work we are citing. If there are two authors (or if there is a single author) we just write down their surnames. For example, the work done by Demšar and Lebar Bajec \cite{Demsar2017LinguisticEvolution} is also important for successful completion of our project.
+	Artificial language models especially large language models (LLMs) have in recent time vastly improved at tackling many tasks when provided with substantial training material. Yet enhancing their commonsense remains difficult. This paper explores approaches to nurture more natural reasoning in these models.
+
+    Commonsense reasoning, the ability to understand and make judgments based on everyday knowledge and experiences, is a crucial aspect of human intelligence. While humans effortlessly apply this knowledge in their daily lives, imparting this ability to LLMs is a complex task. This paper investigates methods such as Chain of Thought (CoT), in-context learning, and plan-and-solve techniques to enhance model performance in tasks requiring common sense knowledge. To better analyse the results we will start our research with a Unicorn LLM\cite{Unicorn}. 
+
+    In this paper we will firstly designing experiments to evaluate the effectiveness of each strategy. Later we will analyzing Unicorns’s reasoning processes, and document how different prompting techniques influence the outcomes. A key aspect of this work is the selection of an appropriate commonsense reasoning dataset. After considering several options, we choose the Rainbow \cite{Rainbow} benchmark, as this benchmark is a universal commonsense reasoning benchmark that brings together six existing commonsense reasoning tasks.
 
 
 %------------------------------------------------
+\section*{Problem}
 
-\section*{Methods}
+Commonsense reasoning in Large Language Models (LLMs) is a complex problem due to the implicit and context-dependent nature of commonsense knowledge. For instance, consider the sentence “The ice cream was too hot to eat.” Humans intuitively understand this sentence is likely incorrect because ice cream is typically cold. However, an LLM might not flag this as an anomaly unless it has been explicitly trained on similar examples or has learned to associate certain objects with their typical properties.
 
-Use the Methods section to describe what you did an how you did it -- in what way did you prepare the data, what algorithms did you use, how did you test various solutions ... Provide all the required details for a reproduction of your work.
+Another challenge is the representation and utilization of commonsense knowledge in LLMs. LLMs learn from the patterns in the data they are trained on, so the size and quality of the training dataset significantly influence their performance. However, encoding commonsense knowledge into a machine-readable format that an LLM can learn from is not straightforward. For example, understanding that “people usually sleep at night” requires the model to learn not just the concepts of “people,” “sleep,” and “night,” but also the typical association between these concepts.
 
-Below are \LaTeX examples of some common elements that you will probably need when writing your report (e.g. figures, equations, lists, code examples ...).
+Lastly, the evaluation of commonsense reasoning in LLMs is a significant challenge. Traditional evaluation metrics may not adequately capture the nuances of commonsense reasoning. For instance, if an LLM generates the sentence “The man opened his umbrella because it was raining,” it demonstrates an understanding of the causal relationship between rain and using an umbrella. However, quantifying this understanding and comparing it across different models or tasks is not trivial, necessitating the development of more sophisticated evaluation metrics and benchmarks.
 
+\section*{Prompting Techniques}
 
-\subsection*{Equations}
+Prompts techniques are the proposed input structures that guide LLMs to produce outputs with the desired form and content quality. That is, to simplify, we can say that we use different prompting techniques to "program" LLM inputs by following specific patterns in order to obtain an output. \cite{prompttechniques}
 
-You can write equations inline, e.g. $\cos\pi=-1$, $E = m \cdot c^2$ and $\alpha$, or you can include them as separate objects. The Bayes’s rule is stated mathematically as:
+\subsection*{Few-shot prompting}
+Few-shot prompting \cite{Few-shot} is a prompting technique that consists of adding examples of how a response to a problem would look a number of times before stating the problem we want solved. Depending on the number of examples we give we can more specifically define our technique as n-shot learning, where n is the number of examples we gave before asking the question. Techniques similar in concept to few-shot prompting are zero-shot prompting (just asking the question directly) or one-shot prompting (adding a single example to a prompt). 
+Examples that show the differences between zero-shot, one-shot and few-shot prompts can be seen in Figure 3.
 
-\begin{equation}
-	P(A|B) = \frac{P(B|A)P(A)}{P(B)},
-	\label{eq:bayes}
-\end{equation}
+\subsection*{Chain of thought}
+Chain of Thought (CoT) \cite{CoT} prompting involves adding a series of intermediate reasoning steps to the intended task. It has been shown to improve performance in more complex prompts.
+These intermediate reasoning steps can be thought of as giving an answer to a similar problem but with detailed steps on how to get to that answer as shown in Figure 1. This is similar to few-shot prompting, which also provides examples of answers to similar questions, however few-shot prompts include less detail that is they usually provide only questions and answers, no intermediate reasoning steps in between. \cite{CoT}
 
-where $A$ and $B$ are some events. You can also reference it -- the equation \ref{eq:bayes} describes the Bayes's rule.
-
-\subsection*{Lists}
-
-We can insert numbered and bullet lists:
-
-% the [noitemsep] option makes the list more compact
-\begin{enumerate}[noitemsep] 
-	\item First item in the list.
-	\item Second item in the list.
-	\item Third item in the list.
-\end{enumerate}
-
-\begin{itemize}[noitemsep] 
-	\item First item in the list.
-	\item Second item in the list.
-	\item Third item in the list.
-\end{itemize}
-
-We can use the description environment to define or describe key terms and phrases.
-
-\begin{description}
-	\item[Word] What is a word?.
-	\item[Concept] What is a concept?
-	\item[Idea] What is an idea?
-\end{description}
-
-
-\subsection*{Random text}
-
-This text is inserted only to make this template look more like a proper report. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam blandit dictum facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam convallis tellus velit, quis ornare ipsum aliquam id. Maecenas tempus mauris sit amet libero elementum eleifend. Nulla nunc orci, consectetur non consequat ac, consequat non nisl. Aenean vitae dui nec ex fringilla malesuada. Proin elit libero, faucibus eget neque quis, condimentum laoreet urna. Etiam at nunc quis felis pulvinar dignissim. Phasellus turpis turpis, vestibulum eget imperdiet in, molestie eget neque. Curabitur quis ante sed nunc varius dictum non quis nisl. Donec nec lobortis velit. Ut cursus, libero efficitur dictum imperdiet, odio mi fermentum dui, id vulputate metus velit sit amet risus. Nulla vel volutpat elit. Mauris ex erat, pulvinar ac accumsan sit amet, ultrices sit amet turpis.
-
-Phasellus in ligula nunc. Vivamus sem lorem, malesuada sed pretium quis, varius convallis lectus. Quisque in risus nec lectus lobortis gravida non a sem. Quisque et vestibulum sem, vel mollis dolor. Nullam ante ex, scelerisque ac efficitur vel, rhoncus quis lectus. Pellentesque scelerisque efficitur purus in faucibus. Maecenas vestibulum vulputate nisl sed vestibulum. Nullam varius turpis in hendrerit posuere.
-
-
-\subsection*{Figures}
-
-You can insert figures that span over the whole page, or over just a single column. The first one, \figurename~\ref{fig:column}, is an example of a figure that spans only across one of the two columns in the report.
-
-\begin{figure}[ht]\centering
-	\includegraphics[width=\linewidth]{single_column.pdf}
-	\caption{\textbf{A random visualization.} This is an example of a figure that spans only across one of the two columns.}
+\begin{figure}[!h]\centering
+	\includegraphics[width=\linewidth]{Example_CoT.png}
+	\caption{Example of a Chain of Thought prompt versus a regular prompt}
 	\label{fig:column}
 \end{figure}
 
-On the other hand, \figurename~\ref{fig:whole} is an example of a figure that spans across the whole page (across both columns) of the report.
+\subsection*{Plan and solve}
+The plan and solve \cite{plansolve} prompting technique breaks up our prompt into multiple prompts. It starts with a prompt that constructs a plan to solve the stated problem, after which it uses the generated plan to guide the model into providing the final solution. An example of this approach is shown in Figure 2
 
-% \begin{figure*} makes the figure take up the entire width of the page
-\begin{figure*}[ht]\centering 
-	\includegraphics[width=\linewidth]{whole_page.pdf}
-	\caption{\textbf{Visualization of a Bayesian hierarchical model.} This is an example of a figure that spans the whole width of the report.}
-	\label{fig:whole}
-\end{figure*}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\linewidth]{fig/image.png}
+    \caption{Plan and solve prompt series example}
+    \label{fig:colum}
+\end{figure}
 
+\subsection*{Three of thoughts}
+Tree of Thoughts (ToT) \cite{ToT} is a technique that is based one exploring multiple reasoning paths over thoughts. ToT frames any problem as a search over a tree, where each node is a state representing a partial solution with respect to the input and the sequence of previous thoughts. A specific construction of ToT can be divided into solving four sub-problems:
+\begin{enumerate}
+    \item Decomposition of the intermediate process into thought steps
+    \item Potential thought generation based on each individual state
+    \item State evaluation
+    \item Choice of search algorithm 
+\end{enumerate}
 
-\subsection*{Tables}
+The differences between similar strategies are shown in Figure 3.
+\begin{figure}[!h]\centering
+	\includegraphics[width=\linewidth]{fig/x1.png}
+	\caption{Differences between IO, CoT, CoT-SC and ToT}
+	\label{fig:column}
+\end{figure}
 
-Use the table environment to insert tables.
+\subsection*{Directional Stimulus prompting}
+This prompting technique adds a component named "directional stiumulus" to the prompt. The goal is to provide guidance for a specific prompt. This technique adds hints and clues to the input query to try and guide the model to producing a higher quality response. This method differs from other methods as it doesn't add additional knowledge to the prompt. \cite{directional} An example of this approach is shown in Figure 4.
 
-\begin{table}[hbt]
-	\caption{Table of grades.}
-	\centering
-	\begin{tabular}{l l | r}
-		\toprule
-		\multicolumn{2}{c}{Name} \\
-		\cmidrule(r){1-2}
-		First name & Last Name & Grade \\
-		\midrule
-		John & Doe & $7.5$ \\
-		Jane & Doe & $10$ \\
-		Mike & Smith & $8$ \\
-		\bottomrule
-	\end{tabular}
-	\label{tab:label}
-\end{table}
+\vspace{10pt}
 
-
-\subsection*{Code examples}
-
-You can also insert short code examples. You can specify them manually, or insert a whole file with code. Please avoid inserting long code snippets, advisors will have access to your repositories and can take a look at your code there. If necessary, you can use this technique to insert code (or pseudo code) of short algorithms that are crucial for the understanding of the manuscript.
-
-\lstset{language=Python}
-\lstset{caption={Insert code directly from a file.}}
-\lstset{label={lst:code_file}}
-\lstinputlisting[language=Python]{code/example.py}
-
-\lstset{language=R}
-\lstset{caption={Write the code you want to insert.}}
-\lstset{label={lst:code_direct}}
-\begin{lstlisting}
-import(dplyr)
-import(ggplot)
-
-ggplot(diamonds,
-	   aes(x=carat, y=price, color=cut)) +
-  geom_point() +
-  geom_smooth()
-\end{lstlisting}
-
-%------------------------------------------------
-
-\section*{Results}
-
-Use the results section to present the final results of your work. Present the results in a objective and scientific fashion. Use visualisations to convey your results in a clear and efficient manner. When comparing results between various techniques use appropriate statistical methodology.
-
-\subsection*{More random text}
-
-This text is inserted only to make this template look more like a proper report. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam blandit dictum facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam convallis tellus velit, quis ornare ipsum aliquam id. Maecenas tempus mauris sit amet libero elementum eleifend. Nulla nunc orci, consectetur non consequat ac, consequat non nisl. Aenean vitae dui nec ex fringilla malesuada. Proin elit libero, faucibus eget neque quis, condimentum laoreet urna. Etiam at nunc quis felis pulvinar dignissim. Phasellus turpis turpis, vestibulum eget imperdiet in, molestie eget neque. Curabitur quis ante sed nunc varius dictum non quis nisl. Donec nec lobortis velit. Ut cursus, libero efficitur dictum imperdiet, odio mi fermentum dui, id vulputate metus velit sit amet risus. Nulla vel volutpat elit. Mauris ex erat, pulvinar ac accumsan sit amet, ultrices sit amet turpis.
-
-Phasellus in ligula nunc. Vivamus sem lorem, malesuada sed pretium quis, varius convallis lectus. Quisque in risus nec lectus lobortis gravida non a sem. Quisque et vestibulum sem, vel mollis dolor. Nullam ante ex, scelerisque ac efficitur vel, rhoncus quis lectus. Pellentesque scelerisque efficitur purus in faucibus. Maecenas vestibulum vulputate nisl sed vestibulum. Nullam varius turpis in hendrerit posuere.
-
-Nulla rhoncus tortor eget ipsum commodo lacinia sit amet eu urna. Cras maximus leo mauris, ac congue eros sollicitudin ac. Integer vel erat varius, scelerisque orci eu, tristique purus. Proin id leo quis ante pharetra suscipit et non magna. Morbi in volutpat erat. Vivamus sit amet libero eu lacus pulvinar pharetra sed at felis. Vivamus non nibh a orci viverra rhoncus sit amet ullamcorper sem. Ut nec tempor dui. Aliquam convallis vitae nisi ac volutpat. Nam accumsan, erat eget faucibus commodo, ligula dui cursus nisi, at laoreet odio augue id eros. Curabitur quis tellus eget nunc ornare auctor.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\linewidth]{fig/directional.png}
+    \caption{Example of directional stiumulus prompting}
+    \label{fig:column}
+\end{figure}
 
 
-%------------------------------------------------
+\begin{figure}[!h]\centering
+	\includegraphics[width=\linewidth]{fig/few-shot-new.png}
+	\caption{Examples of zero-shot, one-shot and few-shot prompts}
+	\label{fig:column}
+\end{figure}
 
-\section*{Discussion}
 
-Use the Discussion section to objectively evaluate your work, do not just put praise on everything you did, be critical and exposes flaws and weaknesses of your solution. You can also explain what you would do differently if you would be able to start again and what upgrades could be done on the project in the future.
+\section*{Datasets}
+Because commonsense reasoning is a complex topic and encompasses a wide collection of different tasks, it is difficult to generate a dataset that will evaluate the model's generalization abilities.
 
+The Winograd schema challenge \cite{levesque2012winograd} was the standard for testing the commonsense reasoning, however from 2019 it is considered defeated since numerous transformer-based models achieved over 90\% accuracy. \cite{beaten_winograd}
+For that reason, we will use more recent and challenging datasets.
 
-%------------------------------------------------
+On the one side, we have different SOTA methods \cite{CoT} evaluated on task specific datasets like GSM8K \cite{GSMK8}. This dataset focuses on linguistically diverse grade school math problems created by human problem writers.
 
-\section*{Acknowledgments}
+On the other side, there are benchmarks that combine multiple commonsense datasets. For this project we will use Rainbow which is a suite of commonsense benchmarks that contain multiple choice question-answering datasets.
+Rainbow contains the following datasets
 
-Here you can thank other persons (advisors, colleagues ...) that contributed to the successful completion of your project.
+\begin{itemize}
+    \item $\alpha$NLI \cite{alphaNLI} - tests abductive reasoning in narratives. Models need to find the best explanation among the presented options connecting a beginning and ending;
+    \item  CosmosQA \cite{Tian2020} — asks commonsense reading comprehensions about narratives in everyday situations
+    \item HellaSWAG \cite{Zellers2020} — models need to find the most plausable ending to a short content.
+    \item PIQA \cite{Bisk2020} — question answering benchmark for commonsense reasoning.
+    \item SocialIQa \cite{socialIQA} — commonsense reasoning about social situations and interactions
+    \item WinoGrande \cite{WinoGRANDE} — large-scale collection of Winograd schema-inspired problems that test reasoning about social and physical interactions.
+\end{itemize}
+
+Other possibilities for testing commonsense reasoning are the GLUE \cite{GLUE} and SuperGLUE \cite{supeglue} datasets, which are benchmarks for general language understanding systems.
+
 
 
 %----------------------------------------------------------------------------------------
