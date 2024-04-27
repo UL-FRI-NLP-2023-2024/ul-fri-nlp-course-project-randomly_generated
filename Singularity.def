@@ -1,5 +1,0 @@
-Bootstrap: docker
-From: pytorch/pytorch:latest
-
-%post
-    pip install numpy matplotlib transformers
