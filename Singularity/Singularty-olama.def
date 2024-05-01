@@ -1,0 +1,5 @@
+Bootstrap: docker
+From: indroid/nlp-dspy
+
+%post
+   
