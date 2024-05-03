@@ -56,7 +56,7 @@
 %----------------------------------------------------------------------------------------
 
 \Abstract{
-With the rise in LLM usage, diverse optimization techniques have emerged. In order to evaluate and compare the efficiency of different prompt strategies, we first needed to describe what commonsense-reasoning tasks are. After describing the tasks we made a selection of different prompt strategies which required us reviewing the different strategies and choosing the ones that seemed to be both in popular use and different enough so that these evaluations could be extended to different sub-types of mentioned strategies. After choosing the strategies, we also choose models and datasets to test the strategies on, and reviewed possible evaluation methods.
+In order to systematically evaluate and compare the efficiency of different prompt strategies, we developed a flexible testing framework capable of accommodating multiple prompting techniques and LLMs. We utilized the DSPy framework to reshape prompts from a selected dataset to align with the Chain-of-Thought strategy. We used Llama3 to generate predictions based on Chain-of-Thought prompts and zero-shot prompts on 100 examples from the Physical IQa dataset.
 }
 
 %----------------------------------------------------------------------------------------
@@ -77,12 +77,9 @@ With the rise in LLM usage, diverse optimization techniques have emerged. In ord
 %----------------------------------------------------------------------------------------
 
 \section*{Introduction}
-	Artificial language models especially large language models (LLMs) have in recent time vastly improved at tackling many tasks when provided with substantial training material. Yet enhancing their commonsense remains difficult. This paper explores approaches to nurture more natural reasoning in these models.
+Large Language Models (LLMs) have shown remarkable progress in various tasks when supplied with extensive training material. However, improving their commonsense reasoning capabilities remains a considerable challenge. Commonsense reasoning, which involves making judgments based on everyday knowledge and experiences, is a vital aspect of human intelligence. Incorporating this ability into LLMs is a complex task.
 
-    Commonsense reasoning, the ability to understand and make judgments based on everyday knowledge and experiences, is a crucial aspect of human intelligence. While humans effortlessly apply this knowledge in their daily lives, imparting this ability to LLMs is a complex task. This paper investigates methods such as Chain of Thought (CoT), in-context learning, and plan-and-solve techniques to enhance model performance in tasks requiring common sense knowledge. To better analyse the results we will start our research with a Unicorn LLM\cite{Unicorn}. 
-
-    In this paper we will firstly designing experiments to evaluate the effectiveness of each strategy. Later we will analyzing Unicorns’s reasoning processes, and document how different prompting techniques influence the outcomes. A key aspect of this work is the selection of an appropriate commonsense reasoning dataset. After considering several options, we choose the Rainbow \cite{Rainbow} benchmark, as this benchmark is a universal commonsense reasoning benchmark that brings together six existing commonsense reasoning tasks.
-
+In this paper, we compare two prompting strategies Chain of Thought and Zero-Shot. Our evaluation framework, designed to accommodate multiple models and strategies in the future, uses a subset of the Physical IQa benchmark for testing. The primary objective of this paper is to serve as a proof of concept for our evaluation framework and to provide a blueprint for comparing the effectiveness of different prompt strategies on various LLMs.
 
 %------------------------------------------------
 \section*{Problem}
@@ -93,68 +90,33 @@ Another challenge is the representation and utilization of commonsense knowledge
 
 Lastly, the evaluation of commonsense reasoning in LLMs is a significant challenge. Traditional evaluation metrics may not adequately capture the nuances of commonsense reasoning. For instance, if an LLM generates the sentence “The man opened his umbrella because it was raining,” it demonstrates an understanding of the causal relationship between rain and using an umbrella. However, quantifying this understanding and comparing it across different models or tasks is not trivial, necessitating the development of more sophisticated evaluation metrics and benchmarks.
 
+Our approach to this implementation starts with taking the prompts from a given dataset and using an LLM to reshape them into a given strategy. Unfortunately not many datasets are available that compare different strategies and most are used to compare different LLMs. After reshaping the prompts we run them through the model and compare the results we get to the correct results from the dataset.
+
 \section*{Prompting Techniques}
 
 Prompts techniques are the proposed input structures that guide LLMs to produce outputs with the desired form and content quality. That is, to simplify, we can say that we use different prompting techniques to "program" LLM inputs by following specific patterns in order to obtain an output. \cite{prompttechniques}
 
-\subsection*{Few-shot prompting}
-Few-shot prompting \cite{Few-shot} is a prompting technique that consists of adding examples of how a response to a problem would look a number of times before stating the problem we want solved. Depending on the number of examples we give we can more specifically define our technique as n-shot learning, where n is the number of examples we gave before asking the question. Techniques similar in concept to few-shot prompting are zero-shot prompting (just asking the question directly) or one-shot prompting (adding a single example to a prompt). 
-Examples that show the differences between zero-shot, one-shot and few-shot prompts can be seen in Figure 3.
-
-\subsection*{Chain of thought}
-Chain of Thought (CoT) \cite{CoT} prompting involves adding a series of intermediate reasoning steps to the intended task. It has been shown to improve performance in more complex prompts.
-These intermediate reasoning steps can be thought of as giving an answer to a similar problem but with detailed steps on how to get to that answer as shown in Figure 1. This is similar to few-shot prompting, which also provides examples of answers to similar questions, however few-shot prompts include less detail that is they usually provide only questions and answers, no intermediate reasoning steps in between. \cite{CoT}
-
-\begin{figure}[!h]\centering
-	\includegraphics[width=\linewidth]{Example_CoT.png}
-	\caption{Example of a Chain of Thought prompt versus a regular prompt}
-	\label{fig:column}
-\end{figure}
-
-\subsection*{Plan and solve}
-The plan and solve \cite{plansolve} prompting technique breaks up our prompt into multiple prompts. It starts with a prompt that constructs a plan to solve the stated problem, after which it uses the generated plan to guide the model into providing the final solution. An example of this approach is shown in Figure 2
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=\linewidth]{fig/image.png}
-    \caption{Plan and solve prompt series example}
-    \label{fig:colum}
-\end{figure}
-
-\subsection*{Three of thoughts}
-Tree of Thoughts (ToT) \cite{ToT} is a technique that is based one exploring multiple reasoning paths over thoughts. ToT frames any problem as a search over a tree, where each node is a state representing a partial solution with respect to the input and the sequence of previous thoughts. A specific construction of ToT can be divided into solving four sub-problems:
-\begin{enumerate}
-    \item Decomposition of the intermediate process into thought steps
-    \item Potential thought generation based on each individual state
-    \item State evaluation
-    \item Choice of search algorithm 
-\end{enumerate}
-
-The differences between similar strategies are shown in Figure 3.
-\begin{figure}[!h]\centering
-	\includegraphics[width=\linewidth]{fig/x1.png}
-	\caption{Differences between IO, CoT, CoT-SC and ToT}
-	\label{fig:column}
-\end{figure}
-
-\subsection*{Directional Stimulus prompting}
-This prompting technique adds a component named "directional stiumulus" to the prompt. The goal is to provide guidance for a specific prompt. This technique adds hints and clues to the input query to try and guide the model to producing a higher quality response. This method differs from other methods as it doesn't add additional knowledge to the prompt. \cite{directional} An example of this approach is shown in Figure 4.
-
-\vspace{10pt}
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics[width=\linewidth]{fig/directional.png}
-    \caption{Example of directional stiumulus prompting}
-    \label{fig:column}
-\end{figure}
-
+\subsection*{Zero shot prompting}
+Zero-shot prompting \cite{Few-shot} is a prompting technique in which the prompt is made up only of natural language instruction describing the task. Meaning that no additional demonstrations are allowed. An example of zero-shot, one-shot and few-shot learning, with each "shot" being an additional demonstration, can be seen in Figure \ref{fig:few-shot} 
 
 \begin{figure}[!h]\centering
 	\includegraphics[width=\linewidth]{fig/few-shot-new.png}
 	\caption{Examples of zero-shot, one-shot and few-shot prompts}
-	\label{fig:column}
+	\label{fig:few-shot}
 \end{figure}
+
+\subsection*{Chain of thought}
+Chain of Thought (CoT) \cite{CoT} prompting involves adding a series of intermediate reasoning steps to the intended task. It has been shown to improve performance in more complex prompts.
+These intermediate reasoning steps can be thought of as giving an answer to a similar problem but with detailed steps on how to get to that answer as shown in Figure 1. This is similar to few-shot prompting, which also provides examples of answers to similar questions, however few-shot prompts include less detail that is they usually provide only questions and answers, no intermediate reasoning steps in between. \cite{CoT}
+An example of Chain of Thought prompting can be seen in Figure \ref{fig:cot}
+\begin{figure}[!h]\centering
+	\includegraphics[width=\linewidth]{Example_CoT.png}
+	\caption{Example of a Chain of Thought prompt versus a regular prompt}
+	\label{fig:cot}
+\end{figure}
+
+
+
 
 
 \section*{Datasets}
@@ -179,8 +141,25 @@ Rainbow contains the following datasets
 
 Other possibilities for testing commonsense reasoning are the GLUE \cite{GLUE} and SuperGLUE \cite{supeglue} datasets, which are benchmarks for general language understanding systems.
 
+\section{Results}
+
+\subsection{Setup}
+Our plan was to test our implementation on two promoting strategies. We used the DSPy framework \cite{dspy} to reshape prompts into CoT prompts,  and used the zero-shot prompts as a baseline. We generated predictions on a subset of 100 examples from the Physical IQa dataset using the Llama3-8B-instruct model.
+
+\subsection{First results}
+Initial results for the chain-of-thought prompting technique are promising. In a benchmark test where we provided the model with just the question, the model achieved approximately 55\% accuracy, which is only marginally better than guessing in datasets where the model is given a question and two possible answers. However, upon implementing the chain-of-thought technique, we observed a significant increase in accuracy, reaching over 70\%. This 15\% improvement is a notable achievement for our first and rudimentary implementation of the COT technique.
 
 
+\section*{Evaluation}
+We are currently performing evaluation of the models answers with two different methods. In the first method where the model has to select between two choices and then give his answer we use a simple comparison algorithm. If the model gives multiple answers, we count up the choices and use his most often given answer as the answer we use for comparison. The comparison algorithm is then a simple checker which has the list of correct answers. The checker compares the question id and content from the correct list with those give by the model. And then prints the results.
+
+The other comparison method is a much more involved process for when the model gives a descriptive answer. In this method, we are using an uncased BERT model to generate the embedding and calculate the cosine similarity between the correct answer and the given one. As an additional layer of grading we are comparing cosine similarity with Word2Vec model to better determine the meaning of the sentence these two scores are then combine and if the answer pass the threshold of correctness we are considering the answer as correct. This model also supports comparison of different techniques, and not just direct comparison between the result and the technique. This way we can determine which technique is closer to the right answer even if this particular answer is incorrect.
+
+\section{Discussion}
+In spite of the promising results, we encountered a challenge related to increased run times when employing the chain-of-thought technique, even on an HPC cluster. We attribute this issue mainly to the current implementation's inefficiency. Addressing this inefficiency will be a key focus in refining the chain-of-thought approach for real-world applications.
+As our main goal is to compare multiple prompt strategies, our next steps will be implementing additional strategies and additional models and creating a detailed analysis of the final results.
+
+ 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
