@@ -3,7 +3,8 @@
 This repository contains code and resources accompanying the report on prompt strategies for commonsense reasoning tasks in Large Language Models (LLMs). Common sense reasoning, vital for human intelligence, presents a challenge for LLMs. Our research delves into methodologies such as Chain of Thought (CoT), in-context learning, and plan-and-solve techniques to boost model performance in tasks requiring everyday knowledge.
 
 ## How to Use This Repository
-The PDF of the intermediate report is located in `report/report.pdf`
+The PDF of the intermediate report is located in `report/report.pdf`.
+We are running all our experiments on HPC with slum on a singularity image. For local usage we recommed using venv and installing the same depedecies from [here](https://github.com/UL-FRI-NLP-2023-2024/ul-fri-nlp-course-project-randomly_generated/blob/dbb0c115eab4e9e8dea55f5bb7390b88975e923d/Singularity/Singularity-dspy.def#L5)
 ### Repository structure
 - `Docker` - Dockerfiles for the custom image (currently not used)
 - `Evaluation` - Evaluation scripts and postprocessing of model outputs
