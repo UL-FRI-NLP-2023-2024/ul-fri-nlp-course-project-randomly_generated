@@ -1,13 +1,15 @@
 import json
+import pickle
+from tqdm import tqdm
 
 import pandas as pd
 import numpy as np
 import huggingface_hub
 
 import dspy
-from dspy.teleprompt import BootstrapFewShot
 
-from dspy.evaluate import Evaluate
+# from dspy.teleprompt import BootstrapFewShot
+# from dspy.evaluate import Evaluate
 
 
 TOKEN = "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"
@@ -33,10 +35,14 @@ def make_dataset(questions_path, labels_path):
             answer = answ0
         else:
             answer = answ1
+
+        choices = f"--0:{answ0}\n --1:{answ1}"
     
-        dataset.append(dspy.Example(id_=id_, question=question, answer=answer).with_inputs('question'))
+        dataset.append(dspy.Example(id_=id_, question=question, choices=choices, 
+                                    selection=label).with_inputs('question', 'choices'))
 
     return dataset
+
 
 def accuracy_metric(example, pred, trace):
     print("Answer: ", example.answer)
@@ -57,12 +63,12 @@ def calculate_accuracy(program, devset):
 class CoT(dspy.Module):
     def __init__(self):
         super().__init__()
-        self.prog = dspy.ChainOfThought("question -> answer", temperature=0.01)
+        self.prog = dspy.ChainOfThought('question, choices -> reasoning, Number of the selection', 
+                                        temperature=0.1)
     
-    def forward(self, question):
-        return self.prog(question=question)
+    def forward(self, question, choices):
+        return self.prog(question=question, choices=choices)
 
-# print("login sucessful")
 
 llama3 = dspy.HFModel(model = 'meta-llama/Meta-Llama-3-8B-Instruct')
 
@@ -76,31 +82,39 @@ train_dataset = make_dataset('/d/hpc/home/in7357/data/physicaliqa-train-dev/trai
 dev_dataset = make_dataset('/d/hpc/home/in7357/data/physicaliqa-train-dev/dev.jsonl',
                              '/d/hpc/home/in7357/data/physicaliqa-train-dev/dev-labels.lst')
 print("LOADED DATASET")
-train_dataset = train_dataset[:2]
-dev_dataset = dev_dataset[:2]
+# train_dataset = train_dataset[:2]
+dev_dataset = dev_dataset
 print("TRAIN DATASET: ")
-print(train_dataset)
+# print(train_dataset)
 print('-----------------')
 print("DEV DATASET:----------------")
-print(dev_dataset)
+# print(dev_dataset)
 print('---'*10)
+dev_dataset = dev_dataset[:100]
+chain_of_thought = CoT()
+
+answers = {}
+
+for example in tqdm(dev_dataset):
+    id_ = example.id_
+    response = chain_of_thought(question=example.question, 
+                                choices=example.choices
+                                )
+    answers[id_] = response._store
+import pickle
+with open('/d/hpc/home/in7357/ul-fri-nlp-course-project-randomly_generated/model_outputs/responses_COT.pick', 'wb') as f:
+    pickle.dump(answers, f)
 
 # Set up the optimizer: we want to "bootstrap" (i.e., self-generate) 4-shot examples of our CoT program.
-config = dict(max_bootstrapped_demos=4, max_labeled_demos=4)
+# config = dict(max_bootstrapped_demos=4, max_labeled_demos=4)
 
-# Optimize! Use the `gsm8k_metric` here. In general, the metric is going to tell the optimizer how well it's doing.
-teleprompter = BootstrapFewShot(metric=accuracy_metric, **config)
-optimized_cot = teleprompter.compile(CoT(), trainset=train_dataset, valset=dev_dataset)
+# # Optimize! Use the `gsm8k_metric` here. In general, the metric is going to tell the optimizer how well it's doing.
+# teleprompter = BootstrapFewShot(metric=accuracy_metric, **config)
+# optimized_cot = teleprompter.compile(CoT(), trainset=train_dataset, valset=dev_dataset)
 
 
 # evaluate = Evaluate(devset=dev_dataset, metric=gsm8k_metric, num_threads=4, display_progress=True, display_table=0)
 
 # Evaluate our `optimized_cot` program.
 # evaluate(optimized_cot)
-print('---'*100)
-print("Calculated accuracy (dev set): ", calculate_accuracy(optimized_cot, dev_dataset))
-print('-'*100)
-print("EVAL END")
-print("-----------------HISOTRY-----------")
-optimized_cot.save('/d/hpc/home/in7357/ul-fri-nlp-course-project-randomly_generated/model_outputs/llama_optimized_test.json')
-# llama3.inspect_history(n=1)
+llama3.inspect_history(n=1)

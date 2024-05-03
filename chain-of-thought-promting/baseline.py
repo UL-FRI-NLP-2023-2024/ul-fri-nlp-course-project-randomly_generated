@@ -10,7 +10,7 @@ from dspy.teleprompt import BootstrapFewShot
 from dspy.evaluate import Evaluate
 from tqdm import tqdm
 
-TOKEN = "ENTER TOKEN FROM HUGGINGFACE"
+TOKEN = "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"
 
 huggingface_hub.login(token=TOKEN)
 
@@ -62,7 +62,7 @@ dspy.settings.configure(lm=llama3)
 
 print("LOADED LAMA")
 print('--'*50)
-classify = dspy.Predict('question, choices -> reasoning, Number of the selection', temperature=0.1)
+classify = dspy.Predict('question, choices -> answer, Number of the selection', temperature=0.1)
 
 train_dataset = make_dataset('/d/hpc/home/in7357/data/physicaliqa-train-dev/train.jsonl',
                              '/d/hpc/home/in7357/data/physicaliqa-train-dev/train-labels.lst')
@@ -80,5 +80,5 @@ for example in tqdm(dev_dataset):
     response = classify(question=example.question, choices=example.choices)
     answers[id_] = response._store
 import pickle
-with open('/d/hpc/home/in7357/ul-fri-nlp-course-project-randomly_generated/model_outputs/responses_baseline.pick', 'wb') as f:
+with open('/d/hpc/home/in7357/ul-fri-nlp-course-project-randomly_generated/model_outputs/responses_baseline_NO_REASONING.pick', 'wb') as f:
     pickle.dump(answers, f)
