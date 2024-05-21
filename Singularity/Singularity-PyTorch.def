@@ -4,4 +4,4 @@ From: pytorch/pytorch:2.3.0-cuda12.1-cudnn8-devel
 %post
     mkdir $HOME/pip_installs/
     pip install --target $HOME/pip_installs transformers accelerate bitsandbytes dspy-ai jsonlines huggingface_hub
-    export PYTHONPATH=$HOME/pip_installs:$PYTHONPATH
+    export PYTHONPATH=/root/pip_installs:$PYTHONPATH
