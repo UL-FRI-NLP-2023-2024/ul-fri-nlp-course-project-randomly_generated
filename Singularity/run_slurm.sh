@@ -13,5 +13,5 @@
 # Replace './containers/project.sif' with the path to your Singularity container if it's different
 # Replace '/d/hpc/home/zp68409/Test.py' with the path to your Python script if it's different
 srun singularity exec --nv ./containers/project.sif python /d/hpc/home/zp68409/Test.py
-# srun singularity exec --nv ./containers/dspy.sif bash -c "ollama pull llama3:8b && python /d/hpc/home/in7357/ul-fri-nlp-course-project-randomly_generated/few-shot-promting/mininal_example.py"
+# srun singularity exec --nv ./containers/dspy-lamafile.sif bash -c "nohup ./llava-v1.5-7b-q4.llamafile & && python /d/hpc/home/in7357/ul-fri-nlp-course-project-randomly_generated/chain-of-thought-promting/lamafile/prompting.py"
 # srun singularity exec --nv ./containers/dspy.sif bash -c "ollama pull llama3:8b)"
