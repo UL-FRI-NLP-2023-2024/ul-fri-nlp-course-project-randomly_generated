@@ -9,23 +9,14 @@ from argparse import ArgumentParser
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--model', type=str, default='google/gemma-1.1-2b-it')
-<<<<<<< HEAD
-    # parser.add_argument('--model', type=str, default='meta-llama/Meta-Llama-3-8B')
-    parser.add_argument('--temperature', type=float, default=0.7)
-    parser.add_argument('--train_data', type=str, default='/home/ivan/FRI/2023-2024/sem2/nlp/data/physicaliqa-train-dev/train.jsonl')
-    parser.add_argument('--train_labels', type=str, default='/home/ivan/FRI/2023-2024/sem2/nlp/data/physicaliqa-train-dev/train-labels.lst')
-    parser.add_argument('--dev_data', type=str, default='/home/ivan/FRI/2023-2024/sem2/nlp/data/physicaliqa-train-dev/dev.jsonl')
-    parser.add_argument('--dev_labels', type=str, default='/home/ivan/FRI/2023-2024/sem2/nlp/data/physicaliqa-train-dev/dev-labels.lst')
-    parser.add_argument('--output', type=str, default='/home/ivan/FRI/2023-2024/sem2/nlp/data/GEMMA_responses_baseline_NO_REASONING.pick')
-=======
     parser.add_argument('--temperature', type=float, default=0.1)
     parser.add_argument('--train_data', type=str, default='/d/hpc/home/in7357/data/physicaliqa-train-dev/train.jsonl')
     parser.add_argument('--train_labels', type=str, default='/d/hpc/home/in7357/data/physicaliqa-train-dev/train-labels.lst')
     parser.add_argument('--dev_data', type=str, default='/d/hpc/home/in7357/data/physicaliqa-train-dev/dev.jsonl')
     parser.add_argument('--dev_labels', type=str, default='/d/hpc/home/in7357/data/physicaliqa-train-dev/dev-labels.lst')
     parser.add_argument('--output', type=str, default='/d/hpc/home/in7357/ul-fri-nlp-course-project-randomly_generated/model_outputs/GEMMA_responses_COT-imporved-prompts.pick')
->>>>>>> 9442862 (Add latest code)
     return parser.parse_args()
+
 
 def make_dataset(questions_path, labels_path):
     dataset = []
