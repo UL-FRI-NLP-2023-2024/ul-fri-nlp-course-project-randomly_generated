@@ -13,6 +13,10 @@ from tqdm import tqdm
 
 from data_utils import make_dataset, parse_args
 
+<<<<<<< HEAD
+=======
+# TOKEN = "token from huggingface.co/tokens"
+>>>>>>> 9442862 (Add latest code)
 TOKEN = "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"
 
 huggingface_hub.login(token=TOKEN)
@@ -24,7 +28,11 @@ if __name__ == '__main__':
 
     llama3 = dspy.HFModel(model = arguments.model)
     dspy.settings.configure(lm=llama3)
+<<<<<<< HEAD
     classify = dspy.Predict('question, choices -> answer', temperature=0.1)
+=======
+    classify = dspy.Predict('question, choices -> answer, Number of the selection [0 or 1]', temperature=0.1)
+>>>>>>> 9442862 (Add latest code)
 
 
     train_dataset = make_dataset(arguments.train_data, arguments.train_labels)

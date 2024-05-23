@@ -12,7 +12,10 @@ import dspy
 from data_utils import make_dataset, parse_args
 
 
+<<<<<<< HEAD
 TOKEN = "TOKEN from https://huggingface.co/settings/tokens"
+=======
+>>>>>>> 9442862 (Add latest code)
 TOKEN = "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"
 
 huggingface_hub.login(token=TOKEN)
@@ -22,7 +25,7 @@ huggingface_hub.login(token=TOKEN)
 class CoT(dspy.Module):
     def __init__(self):
         super().__init__()
-        self.prog = dspy.ChainOfThought('question, choices -> reasoning, Number of the selection', 
+        self.prog = dspy.ChainOfThought('question, choices -> reasoning, Number of the selection [0 or 1]', 
                                         temperature=0.1)
     
     def forward(self, question, choices):
@@ -44,7 +47,7 @@ if __name__ == '__main__':
                                 arguments.dev_labels)
     print("LOADED DATASET")
 
-    dev_dataset = dev_dataset[:100]
+    # dev_dataset = dev_dataset[:100]
     chain_of_thought = CoT()
 
     answers = {}
@@ -71,4 +74,4 @@ if __name__ == '__main__':
 
     # Evaluate our `optimized_cot` program.
     # evaluate(optimized_cot)
-    llama3.inspect_history(n=1)
+    # llama3.inspect_history(n=1)
