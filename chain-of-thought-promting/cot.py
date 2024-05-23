@@ -12,7 +12,8 @@ import dspy
 from data_utils import make_dataset, parse_args
 
 
-TOKEN = "TOKEN from huggingface.co/tokens"
+TOKEN = "TOKEN from https://huggingface.co/settings/tokens"
+TOKEN = "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"
 
 huggingface_hub.login(token=TOKEN)
 
