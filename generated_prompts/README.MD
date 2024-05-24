@@ -1,0 +1,1 @@
+This folder contains generated prompts with hints and examples respectively for each of the datasets. Be careful of the correct answers inserted into some of the questions when evaluating the prompts.
