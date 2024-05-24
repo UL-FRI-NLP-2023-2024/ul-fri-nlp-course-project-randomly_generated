@@ -4,7 +4,7 @@ from tqdm import tqdm
 import jsonlines
 
 # Initialize huggingface
-TOKEN = "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"
+TOKEN = "Insert your huggingface token here"
 huggingface_hub.login(token=TOKEN)
 
 # Use model mistralai/Mistral-7B-Instruct-v0.2
@@ -19,6 +19,9 @@ dspy.settings.configure(lm=llm)
 file1 = open("anli.lst", 'r')
 answers = file1.read().split()
 file1.close()
+
+
+# Winograd
 #class HintSigature(dspy.Signature):
 #    """One sentence which is a hint towards the correct answer, but not the answer itself"""
 #    question = dspy.InputField(desc="a problem made up of a problem sentence, which comes after 'sentence', and options that represent possible answers, the id of the correct solution is in the field 'answer'")
@@ -38,9 +41,9 @@ class HintSigature(dspy.Signature):
 
 
 
-#Define a simple signature for basic question answering
+# Winograd
 #class FewShot(dspy.Signature):
-#    """Five examples of simmilar questions with the correct answers"""
+#    """3 examples of simmilar questions with the correct answers"""
 #    question = dspy.InputField(desc="a problem made up of a problem sentence, which comes after 'sentence', and options that represent possible answers, the correct result is in the field 'answer'")
 #    answer = dspy.OutputField(desc="3 examples simmilar of simmilar problems. Each example is written in the form example1: {example sentence}, answer1: {correct answer}" )
 
@@ -95,10 +98,7 @@ def generate_answers(file_name_read, file_name_write, answer_generation_function
         
         obj["hint"] = answer
         new_prompt_list.append(obj)
-        print(obj)
-        #cnt+=1
-            #print(obj.keys())
-            #break
+        
 
     with jsonlines.open(file_name_write, mode='w') as writer:
         for obj in new_prompt_list:
